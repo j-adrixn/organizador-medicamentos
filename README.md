@@ -82,3 +82,70 @@ Se añadió la carpeta `codigo_leds` con el firmware para ESP32 que se conecta a
 - `codigo_leds/README.md`: instrucciones y ejemplo de `secrets.h` (no incluye credenciales).
 
 Recuerda no añadir `codigo_leds/secrets.h` al repositorio con credenciales reales. Mira `.gitignore`.
+
+## Guía rápida: Flasheo del ESP32 y verificación
+
+Estas instrucciones ayudan a flashear el firmware `codigo_leds/codigo_leds.ino` en un ESP32 y a verificar la conexión con AWS IoT.
+
+Requisitos
+- Arduino IDE (o `arduino-cli`) o PlatformIO
+- Cable USB para tu ESP32
+- `secrets.h` configurado con tu `ssid`, `password` y certificados
+
+Pasos (Arduino IDE)
+1. Abre `codigo_leds/codigo_leds.ino` en el Arduino IDE.
+2. Coloca `secrets.h` en la misma carpeta del sketch (no subirlo al repo).
+3. Selecciona la placa apropiada (`ESP32 Dev Module`) y el puerto COM.
+4. Pulsa `Upload` y abre el Monitor Serie a `115200` baudios para ver logs.
+
+Pasos (PlatformIO)
+1. Crea un proyecto nuevo para tu placa ESP32 o reutiliza uno existente.
+2. Copia `codigo_leds.ino` y `secrets.h` al directorio `src` del proyecto PlatformIO.
+3. Compila y sube con:
+
+```bash
+pio run -t upload -e <env_name>
+```
+
+Verificación
+- Abre el Monitor Serie a `115200` y verifica mensajes de conexión Wi‑Fi y sincronización de hora.
+- Observa suscripción al tópico `adrix/organizador/alerta` y logs de eventos.
+
+Consejos para certificados
+- Coloca los archivos `Device_certificate.crt`, `private.key` y `AmazonRootCA*.pem` en la carpeta local del dispositivo si tu flujo lo requiere.
+- Nunca subas esos archivos al repositorio. `codigo_leds/secrets.h` puede contener el contenido PEM como string o puedes cargar los archivos desde el sistema de archivos del dispositivo.
+
+## Conectar el frontend para envío MQTT real
+
+Actualmente el proyecto incluye la función `dispararAlarma` en `src/actions/iotActions.js` que publica en AWS IoT. Para activar el envío real desde la UI:
+
+1. Rellena las variables de entorno en Vercel o en tu `.env.local` (NO subirlas a GitHub):
+
+```env
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_IOT_ENDPOINT=a1xqs18b49plc8-ats.iot.us-east-1.amazonaws.com
+AWS_REGION=us-east-1
+```
+
+2. En `src/app/page.js` reemplaza el flujo simulado por una llamada a la server action `dispararAlarma` (o usa `fetch` a una API server-side que invoque esa acción). Ten en cuenta que publicar directamente desde un cliente público no es seguro; usa acciones del servidor o un backend con credenciales.
+
+Ejemplo rápido (Server Action desde Next.js App Router):
+
+```js
+// En un componente/client file
+import { dispararAlarma } from '@/actions/iotActions'
+
+// llamar desde un form handler en el servidor o usar fetch a una ruta API
+await fetch('/api/trigger', { method: 'POST', body: JSON.stringify({ medicamento, color }) })
+```
+
+3. Verifica en el dispositivo ESP32 (Monitor Serie) que llega el mensaje MQTT y que enciende la tira LED.
+
+## Qué hacer ahora (recomendado)
+- Añadir la política mínima en AWS IAM para permitir `iot:Publish` solamente al tópico usado.
+- Revisar que las credenciales usadas por el servidor nunca estén embebidas en el cliente.
+- Si quieres, puedo añadir una guía paso-a-paso para crear la Thing y generar certificados en AWS IoT Core.
+
+---
+
