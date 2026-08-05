@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createAlarmRecord } from '@/lib/alarms'
 
 export default function HomePage() {
   const [medicamento, setMedicamento] = useState('')
@@ -9,6 +10,24 @@ export default function HomePage() {
   const [isSending, setIsSending] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState('')
+  const [alarmas, setAlarmas] = useState([])
+
+  useEffect(() => {
+    async function cargarAlarmas() {
+      try {
+        const response = await fetch('/api/alarms')
+        if (!response.ok) {
+          throw new Error('No se pudieron cargar las alarmas')
+        }
+        const data = await response.json()
+        setAlarmas(data)
+      } catch (error) {
+        console.error('No se pudieron recuperar las alarmas guardadas:', error)
+      }
+    }
+
+    cargarAlarmas()
+  }, [])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -29,16 +48,29 @@ export default function HomePage() {
     setMessageType('')
 
     try {
-      const scheduledAlarm = {
-        medicamento: medicamento.trim(),
-        color: hexColor,
-        hora: alarmTime,
+      const scheduledAlarm = createAlarmRecord(medicamento, hexColor, alarmTime)
+      const response = await fetch('/api/alarms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          medicamento: scheduledAlarm.medicamento,
+          color: scheduledAlarm.color,
+          hora: scheduledAlarm.hora,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('No se pudo guardar la alarma')
       }
 
-      console.log('Alarma programada:', scheduledAlarm)
+      const data = await response.json()
+      const nuevasAlarmas = [data, ...alarmas]
+      setAlarmas(nuevasAlarmas)
+
+      console.log('Alarma programada:', data)
 
       setMessageType('success')
-      setMessage('Alarma programada correctamente. Se guardó en la base de datos.')
+      setMessage('Alarma programada correctamente. Se guardó en la API del proyecto.')
       setMedicamento('')
       setHexColor('#FF0000')
       setAlarmTime('')
@@ -173,21 +205,27 @@ export default function HomePage() {
             </div>
 
             <div className="rounded-3xl border border-slate-800 bg-slate-950/60 p-6">
-              <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Instrucciones</p>
-              <ul className="mt-4 space-y-3 text-slate-300">
-                <li className="flex gap-3">
-                  <span className="mt-0.5 inline-flex h-2.5 w-2.5 rounded-full bg-cyan-400" />
-                  Ingresa el medicamento y selecciona un color de alerta.
-                </li>
-                <li className="flex gap-3">
-                  <span className="mt-0.5 inline-flex h-2.5 w-2.5 rounded-full bg-cyan-400" />
-                  Presiona "Programar Alarma" para guardar el recordatorio.
-                </li>
-                <li className="flex gap-3">
-                  <span className="mt-0.5 inline-flex h-2.5 w-2.5 rounded-full bg-cyan-400" />
-                  Observa el estado de éxito o error en este panel.
-                </li>
-              </ul>
+              <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Alarmas guardadas</p>
+              {alarmas.length === 0 ? (
+                <p className="mt-4 text-sm text-slate-400">Aún no hay alarmas guardadas.</p>
+              ) : (
+                <ul className="mt-4 space-y-3 text-slate-300">
+                  {alarmas.map((alarma) => (
+                    <li key={alarma.id} className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="font-medium text-white">{alarma.medicamento}</p>
+                          <p className="text-sm text-slate-400">{alarma.hora}</p>
+                        </div>
+                        <div
+                          className="h-8 w-8 rounded-full border border-slate-700"
+                          style={{ backgroundColor: alarma.color }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </aside>
         </section>
