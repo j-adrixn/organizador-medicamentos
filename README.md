@@ -73,3 +73,12 @@ AWS_REGION=us-east-1
 - No subir `.env.local` a GitHub.
 - Mantener las keys y certificados seguros.
 - Usar Vercel Dashboard para añadir las variables de entorno necesarias y revisar logs.
+
+## Firmware ESP32 (codigo_leds)
+
+Se añadió la carpeta `codigo_leds` con el firmware para ESP32 que se conecta a AWS IoT Core y controla una tira LED WS2812B.
+
+- `codigo_leds/codigo_leds.ino`: firmware principal.
+- `codigo_leds/README.md`: instrucciones y ejemplo de `secrets.h` (no incluye credenciales).
+
+Recuerda no añadir `codigo_leds/secrets.h` al repositorio con credenciales reales. Mira `.gitignore`.

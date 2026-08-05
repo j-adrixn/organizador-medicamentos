@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 #include <time.h>
 #include <FastLED.h>
-
+ 
 // Llamamos a nuestro archivo de configuración secreto
 #include "secrets.h" 
 
