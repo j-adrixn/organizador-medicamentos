@@ -14,3 +14,4 @@ codigo_leds/*.pem
 codigo_leds/*.crt
 codigo_leds/*.key
 codigo_leds/AmazonRootCA*.pem
+.vercel
