@@ -6,7 +6,7 @@ const PK = 'ALARM'
 /**
  * Crea el objeto de alarma con todos sus campos.
  */
-export function createAlarmRecord(medicamento, color, hora) {
+export function createAlarmRecord(medicamento, color, hora, cajon = 1) {
   if (!medicamento || !medicamento.trim()) throw new Error('El medicamento es obligatorio.')
   if (!color) throw new Error('El color es obligatorio.')
   if (!hora) throw new Error('La hora es obligatoria.')
@@ -17,6 +17,7 @@ export function createAlarmRecord(medicamento, color, hora) {
     medicamento: medicamento.trim(),
     color,
     hora,
+    cajon: Number(cajon) || 1,
     status: 'pending',
     createdAt: new Date().toISOString(),
   }

@@ -6,6 +6,16 @@ import { dispararAlarma } from '@/actions/iotActions'
  * Compara la hora actual de Ecuador con la hora de cada alarma pendiente.
  */
 export async function GET(request) {
+  // Vercel Cron añade este header automáticamente en producción.
+  // En desarrollo local, la verificación se omite para facilitar pruebas.
+  const authHeader = request.headers.get('authorization')
+  if (
+    process.env.CRON_SECRET &&
+    authHeader !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
+    return Response.json({ error: 'No autorizado.' }, { status: 401 })
+  }
+
   try {
     const pendientes = await getPendingAlarms()
 
