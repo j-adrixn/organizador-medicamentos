@@ -30,7 +30,7 @@ export async function GET(request) {
         try {
           // <-- Aquí pasamos también el cajón para que el ESP32 encienda el LED correcto
           await dispararAlarma(alarma.medicamento, alarma.color, alarma.cajon)
-          
+
           await updateAlarmStatus(alarma.id, 'fired')
           resultados.push({ id: alarma.id, medicamento: alarma.medicamento, cajon: alarma.cajon, status: 'fired' })
           console.log(`[CRON] Alarma disparada: ${alarma.medicamento} en cajón ${alarma.cajon} a las ${horaActual}`)
