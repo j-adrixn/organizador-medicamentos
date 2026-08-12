@@ -65,6 +65,7 @@ export async function getPendingAlarms() {
 
 /**
  * Actualiza el status de una alarma (pending | fired | cancelled).
+ * Guarda firedAt = ahora (momento en que sonó la alarma).
  */
 export async function updateAlarmStatus(id, status) {
   await ddb.send(new UpdateCommand({
@@ -73,6 +74,42 @@ export async function updateAlarmStatus(id, status) {
     UpdateExpression: 'SET #s = :s, firedAt = :t',
     ExpressionAttributeNames: { '#s': 'status' },
     ExpressionAttributeValues: { ':s': status, ':t': new Date().toISOString() },
+  }))
+}
+
+/**
+ * Devuelve las alarmas que ya sonaron pero aún no fueron confirmadas ni marcadas como perdidas.
+ */
+export async function getFiredAlarms() {
+  const all = await getAllAlarms()
+  return all.filter((a) => a.status === 'fired')
+}
+
+/**
+ * Marca una alarma como tomada (el paciente abrió el cajón).
+ * Preserva firedAt original; añade takenAt.
+ */
+export async function markAlarmTaken(id) {
+  await ddb.send(new UpdateCommand({
+    TableName: TABLE,
+    Key: { pk: PK, sk: `alarm_${id}` },
+    UpdateExpression: 'SET #s = :s, takenAt = :t',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'taken', ':t': new Date().toISOString() },
+  }))
+}
+
+/**
+ * Marca una alarma como perdida (el paciente NO abrió el cajón a tiempo).
+ * Preserva firedAt original; añade missedAt.
+ */
+export async function markAlarmMissed(id) {
+  await ddb.send(new UpdateCommand({
+    TableName: TABLE,
+    Key: { pk: PK, sk: `alarm_${id}` },
+    UpdateExpression: 'SET #s = :s, missedAt = :t',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':s': 'missed', ':t': new Date().toISOString() },
   }))
 }
 
