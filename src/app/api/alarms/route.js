@@ -13,16 +13,18 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { medicamento, color, hora, dispararAhora } = await request.json()
+    // 1. Añadimos 'cajon' a la extracción de datos
+    const { medicamento, color, hora, cajon, dispararAhora } = await request.json()
 
-    const alarm = createAlarmRecord(medicamento, color, hora)
+    // 2. Pasamos el cajón a la base de datos de alarmas
+    const alarm = createAlarmRecord(medicamento, color, hora, cajon)
     await saveAlarm(alarm)
 
-    // Si el usuario pidió disparar ahora, enviar MQTT inmediatamente
+    // 3. Si el usuario pidió disparar ahora, enviar MQTT inmediatamente con el cajón
     if (dispararAhora) {
       try {
-        await dispararAlarma(medicamento, color)
-        console.log(`[POST /api/alarms] MQTT disparado inmediatamente para: ${medicamento}`)
+        await dispararAlarma(medicamento, color, cajon)
+        console.log(`[POST /api/alarms] MQTT disparado inmediatamente para: ${medicamento} en cajón ${cajon}`)
       } catch (mqttError) {
         console.error('[POST /api/alarms] Error enviando MQTT:', mqttError)
         // No fallamos la petición completa si MQTT falla —
