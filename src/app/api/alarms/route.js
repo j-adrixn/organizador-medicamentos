@@ -13,22 +13,30 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    // 1. Añadimos 'cajon' a la extracción de datos
-    const { medicamento, color, hora, cajon, dispararAhora } = await request.json()
+    const body = await request.json()
+    let { medicamento, color, hora, cajon, dispararAhora } = body
 
-    // 2. Pasamos el cajón a la base de datos de alarmas
-    const alarm = createAlarmRecord(medicamento, color, hora, cajon)
+    if (!medicamento || !hora) {
+      return Response.json({ error: 'Faltan datos obligatorios (medicamento u hora).' }, { status: 400 })
+    }
+
+    // Asegurar que la hora tenga formato HH:MM limpio (por si el input manda segundos)
+    if (hora.length > 5) {
+      hora = hora.slice(0, 5)
+    }
+
+    const cajonNum = Number(cajon) || 1
+
+    // Creamos y guardamos el registro en la base de datos
+    const alarm = createAlarmRecord(medicamento, color, hora, cajonNum)
     await saveAlarm(alarm)
 
-    // 3. Si el usuario pidió disparar ahora, enviar MQTT inmediatamente con el cajón
     if (dispararAhora) {
       try {
-        await dispararAlarma(medicamento, color, cajon)
-        console.log(`[POST /api/alarms] MQTT disparado inmediatamente para: ${medicamento} en cajón ${cajon}`)
+        await dispararAlarma(medicamento, color, cajonNum)
+        console.log(`[POST /api/alarms] MQTT disparado inmediatamente para: ${medicamento} en cajón ${cajonNum}`)
       } catch (mqttError) {
         console.error('[POST /api/alarms] Error enviando MQTT:', mqttError)
-        // No fallamos la petición completa si MQTT falla —
-        // la alarma quedó guardada y el cron la ejecutará a su hora
       }
     }
 
