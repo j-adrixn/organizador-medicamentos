@@ -16,7 +16,8 @@ function hexToRgb(hex) {
   }
 }
 
-export async function dispararAlarma(medicamento, hexColor) {
+// 1. Añadimos 'cajon' como tercer parámetro
+export async function dispararAlarma(medicamento, hexColor, cajon) {
   if (!medicamento || !hexColor) {
     throw new Error('El medicamento y el color son obligatorios.')
   }
@@ -32,11 +33,13 @@ export async function dispararAlarma(medicamento, hexColor) {
     },
   })
 
+  // 2. Inyectamos el 'cajon' en el JSON que viaja a AWS
   const payload = JSON.stringify({
     medicamento,
     r,
     g,
     b,
+    cajon, // <-- ¡Aquí está la magia para tu ESP32!
     accion: 'sonar',
   })
 
