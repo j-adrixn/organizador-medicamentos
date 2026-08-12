@@ -4,14 +4,9 @@ import { dispararAlarma } from '@/actions/iotActions'
 /**
  * Vercel Cron Job — se ejecuta cada minuto.
  * Compara la hora actual con la hora de cada alarma pendiente.
- * Si coincide, dispara el MQTT (incluyendo el cajón) y marca la alarma como 'fired'.
+ * Sin validación de secreto para permitir la ejecución libre desde cron-job.org.
  */
 export async function GET(request) {
-  const secret = request.headers.get('authorization')
-  if (secret !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'No autorizado.' }, { status: 401 })
-  }
-
   try {
     const pendientes = await getPendingAlarms()
 
@@ -28,7 +23,7 @@ export async function GET(request) {
     for (const alarma of pendientes) {
       if (alarma.hora === horaActual) {
         try {
-          // <-- Aquí pasamos también el cajón para que el ESP32 encienda el LED correcto
+          // Dispara el MQTT incluyendo el cajón correspondiente
           await dispararAlarma(alarma.medicamento, alarma.color, alarma.cajon)
 
           await updateAlarmStatus(alarma.id, 'fired')
