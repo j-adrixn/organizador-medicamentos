@@ -70,6 +70,7 @@ export default function HomePage() {
   const [medicamento, setMedicamento] = useState('')
   const [hexColor, setHexColor]       = useState('#06b6d4')
   const [alarmTime, setAlarmTime]     = useState('')
+  const [cajon, setCajon]             = useState(1) // <-- NUEVO ESTADO DEL CAJÓN
   const [isSending, setIsSending]     = useState(false)
   const [isFiring, setIsFiring]       = useState(false)
   const [message, setMessage]         = useState('')
@@ -117,14 +118,16 @@ export default function HomePage() {
       const res = await fetch('/api/alarms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ medicamento, color: hexColor, hora: alarmTime, dispararAhora: false }),
+        // AHORA SE ENVÍA EL CAJÓN A LA API
+        body: JSON.stringify({ medicamento, color: hexColor, hora: alarmTime, cajon, dispararAhora: false }),
       })
       if (!res.ok) throw new Error('No se pudo guardar la alarma')
       const data = await res.json()
       setAlarmas((prev) => [data, ...prev])
-      showMessage('success', `✅ Alarma programada para las ${alarmTime}. Se disparará automáticamente.`)
+      showMessage('success', `✅ Alarma programada para las ${alarmTime} en el Cajón ${cajon}.`)
       setMedicamento('')
       setAlarmTime('')
+      setCajon(1)
     } catch (e) {
       showMessage('error', 'No se pudo programar la alarma. Intenta de nuevo.')
     } finally {
@@ -143,12 +146,13 @@ export default function HomePage() {
       const res = await fetch('/api/alarms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ medicamento, color: hexColor, hora, dispararAhora: true }),
+        // AHORA SE ENVÍA EL CAJÓN AL DISPARAR DIRECTO
+        body: JSON.stringify({ medicamento, color: hexColor, hora, cajon, dispararAhora: true }),
       })
       if (!res.ok) throw new Error()
       const data = await res.json()
       setAlarmas((prev) => [data, ...prev])
-      showMessage('success', `⚡ Señal enviada al dispositivo para "${medicamento}".`)
+      showMessage('success', `⚡ Señal enviada al Cajón ${cajon} para "${medicamento}".`)
     } catch (e) {
       showMessage('error', 'No se pudo enviar la señal. Verifica las credenciales AWS.')
     } finally {
@@ -280,6 +284,23 @@ export default function HomePage() {
                   />
                 </div>
 
+                {/* NUEVO CAMPO: Selector de Cajón */}
+                <div>
+                  <label htmlFor="cajon" className="mb-2 block text-sm font-medium text-slate-300">
+                    Compartimiento (Cajón)
+                  </label>
+                  <select
+                    id="cajon"
+                    value={cajon}
+                    onChange={(e) => setCajon(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 appearance-none"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7].map(num => (
+                      <option key={num} value={num}>Cajón {num}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {/* Botones */}
                 <div className="flex flex-col gap-3 pt-1 sm:flex-row">
                   <button
@@ -330,7 +351,7 @@ export default function HomePage() {
                   <div className="h-6 w-6 rounded-full" style={{ backgroundColor: hexColor }} />
                 </div>
                 <div>
-                  <p className="font-semibold text-white">{medicamento || 'Medicamento'}</p>
+                  <p className="font-semibold text-white">{medicamento || 'Medicamento'} - Cajón {cajon}</p>
                   <p className="text-sm text-slate-400">{alarmTime ? `Programado para las ${alarmTime}` : 'Sin hora definida'}</p>
                 </div>
               </div>
@@ -399,7 +420,7 @@ export default function HomePage() {
                             <div>
                               <p className="font-semibold text-white">{alarma.medicamento}</p>
                               <p className="flex items-center gap-1 text-xs text-slate-400">
-                                <IconClock /> {alarma.hora}
+                                <IconClock /> {alarma.hora} • Cajón {alarma.cajon || 1}
                               </p>
                             </div>
                           </div>
