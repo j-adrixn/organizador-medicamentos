@@ -2,47 +2,47 @@
 
 import { useEffect, useState, useCallback } from 'react'
 
-// ─── Iconos SVG inline (sin dependencias extra) ─────────────────────────────
+// ─── Iconos SVG inline ─────────────────────────────────────────────────────
 
 function IconPill() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>
+      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" /><path d="m8.5 8.5 7 7" />
     </svg>
   )
 }
 function IconClock() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
     </svg>
   )
 }
 function IconZap() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   )
 }
 function IconTrash() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
     </svg>
   )
 }
 function IconWifi() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>
+      <path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" />
     </svg>
   )
 }
 function IconBox() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>
+      <polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" /><line x1="10" y1="12" x2="14" y2="12" />
     </svg>
   )
 }
@@ -52,13 +52,13 @@ function IconBox() {
 function formatLastSeen(isoString) {
   if (!isoString) return 'Sin datos'
   const d = new Date(isoString)
-  return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  return d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
 function statusBadge(status) {
   const map = {
-    pending:   { label: 'Pendiente', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-    fired:     { label: 'Disparada', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+    pending: { label: 'Pendiente', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+    fired: { label: 'Disparada', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
     cancelled: { label: 'Cancelada', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' },
   }
   return map[status] ?? { label: status, cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' }
@@ -68,15 +68,15 @@ function statusBadge(status) {
 
 export default function HomePage() {
   const [medicamento, setMedicamento] = useState('')
-  const [hexColor, setHexColor]       = useState('#06b6d4')
-  const [alarmTime, setAlarmTime]     = useState('')
-  const [cajon, setCajon]             = useState(1) // <-- NUEVO ESTADO DEL CAJÓN
-  const [isSending, setIsSending]     = useState(false)
-  const [isFiring, setIsFiring]       = useState(false)
-  const [message, setMessage]         = useState('')
+  const [hexColor, setHexColor] = useState('#06b6d4')
+  const [alarmTime, setAlarmTime] = useState('')
+  const [cajon, setCajon] = useState(1)
+  const [isSending, setIsSending] = useState(false)
+  const [isFiring, setIsFiring] = useState(false)
+  const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState('')
-  const [alarmas, setAlarmas]         = useState([])
-  const [deletingId, setDeletingId]   = useState(null)
+  const [alarmas, setAlarmas] = useState([])
+  const [deletingId, setDeletingId] = useState(null)
   const [deviceStatus, setDeviceStatus] = useState(null)
 
   // ── Cargar alarmas ──────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ export default function HomePage() {
   async function handleSubmit(event) {
     event.preventDefault()
     if (!medicamento.trim()) { showMessage('error', 'Por favor ingresa el nombre del medicamento.'); return }
-    if (!alarmTime)          { showMessage('error', 'Por favor selecciona la hora de la alarma.'); return }
+    if (!alarmTime) { showMessage('error', 'Por favor selecciona la hora de la alarma.'); return }
 
     setIsSending(true)
     clearMessage()
@@ -118,8 +118,7 @@ export default function HomePage() {
       const res = await fetch('/api/alarms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // AHORA SE ENVÍA EL CAJÓN A LA API
-        body: JSON.stringify({ medicamento, color: hexColor, hora: alarmTime, cajon, dispararAhora: false }),
+        body: JSON.stringify({ medicamento, color: hexColor, hora: alarmTime, cajon: Number(cajon), dispararAhora: false }),
       })
       if (!res.ok) throw new Error('No se pudo guardar la alarma')
       const data = await res.json()
@@ -142,19 +141,18 @@ export default function HomePage() {
     clearMessage()
 
     try {
-      const hora = new Date().toTimeString().slice(0, 5)
+      const hora = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
       const res = await fetch('/api/alarms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // AHORA SE ENVÍA EL CAJÓN AL DISPARAR DIRECTO
-        body: JSON.stringify({ medicamento, color: hexColor, hora, cajon, dispararAhora: true }),
+        body: JSON.stringify({ medicamento, color: hexColor, hora, cajon: Number(cajon), dispararAhora: true }),
       })
       if (!res.ok) throw new Error()
       const data = await res.json()
       setAlarmas((prev) => [data, ...prev])
       showMessage('success', `⚡ Señal enviada al Cajón ${cajon} para "${medicamento}".`)
     } catch (e) {
-      showMessage('error', 'No se pudo enviar la señal. Verifica las credenciales AWS.')
+      showMessage('error', 'No se pudo enviar la señal. Verifica la conexión.')
     } finally {
       setIsFiring(false)
     }
@@ -175,7 +173,7 @@ export default function HomePage() {
   }
 
   function showMessage(type, text) { setMessageType(type); setMessage(text) }
-  function clearMessage()          { setMessage(''); setMessageType('') }
+  function clearMessage() { setMessage(''); setMessageType('') }
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
@@ -284,7 +282,7 @@ export default function HomePage() {
                   />
                 </div>
 
-                {/* NUEVO CAMPO: Selector de Cajón */}
+                {/* Selector de Cajón Corregido */}
                 <div>
                   <label htmlFor="cajon" className="mb-2 block text-sm font-medium text-slate-300">
                     Compartimiento (Cajón)
@@ -293,7 +291,7 @@ export default function HomePage() {
                     id="cajon"
                     value={cajon}
                     onChange={(e) => setCajon(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 appearance-none"
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
                   >
                     {[1, 2, 3, 4, 5, 6, 7].map(num => (
                       <option key={num} value={num}>Cajón {num}</option>
@@ -328,11 +326,10 @@ export default function HomePage() {
                   <div
                     role="status"
                     aria-live="polite"
-                    className={`rounded-xl border px-4 py-3 text-sm ${
-                      messageType === 'success'
+                    className={`rounded-xl border px-4 py-3 text-sm ${messageType === 'success'
                         ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
                         : 'border-rose-500/30 bg-rose-500/10 text-rose-300'
-                    }`}
+                      }`}
                   >
                     {message}
                   </div>
@@ -340,7 +337,7 @@ export default function HomePage() {
               </form>
             </div>
 
-            {/* ── Preview del estado actual ──────────────────────────── */}
+            {/* ── Vista previa ──────────────────────────────────────── */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6">
               <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-400">Vista previa</p>
               <div className="flex items-center gap-4">
@@ -362,11 +359,10 @@ export default function HomePage() {
           <div className="space-y-6">
 
             {/* Estado del cajón */}
-            <div className={`rounded-2xl border p-6 transition-all ${
-              cajónAbierto
+            <div className={`rounded-2xl border p-6 transition-all ${cajónAbierto
                 ? 'border-emerald-500/40 bg-emerald-500/5'
                 : 'border-slate-800 bg-slate-900/80'
-            }`}>
+              }`}>
               <div className="flex items-center gap-3">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${cajónAbierto ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
                   <IconBox />
@@ -374,9 +370,9 @@ export default function HomePage() {
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Estado del cajón</p>
                   <p className={`text-lg font-semibold ${cajónAbierto ? 'text-emerald-300' : 'text-slate-300'}`}>
-                    {deviceStatus?.estado === 'abierto'  ? '✅ Abierto — medicamento tomado'
-                     : deviceStatus?.estado === 'cerrado' ? '🔒 Cerrado — en reposo'
-                     : '⏳ Esperando señal…'}
+                    {deviceStatus?.estado === 'abierto' ? '✅ Abierto — medicamento tomado'
+                      : deviceStatus?.estado === 'cerrado' ? '🔒 Cerrado — en reposo'
+                        : '⏳ Esperando señal…'}
                   </p>
                 </div>
               </div>
@@ -420,7 +416,7 @@ export default function HomePage() {
                             <div>
                               <p className="font-semibold text-white">{alarma.medicamento}</p>
                               <p className="flex items-center gap-1 text-xs text-slate-400">
-                                <IconClock /> {alarma.hora} • Cajón {alarma.cajon || 1}
+                                <IconClock /> {alarma.hora} • Cajón {alarma.cajon ?? 1}
                               </p>
                             </div>
                           </div>
